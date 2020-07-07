@@ -1,0 +1,7 @@
+server:
+  port: 8081
+oauth:
+  clientId: 252882737828-4nijfj919fdsokaalhgcada9djg0ttth.apps.googleusercontent.com # get a client-id from https://console.developers.google.com/
+  clientSecret: GoejX8RdVuDL4QijCmIfdKfx # get a client-secret from https://console.developers.google.com/
+  checkTokenUrl: https://oauth2.googleapis.com/tokeninfo?id_token={accessToken}
+  userInfoUrl: https://www.googleapis.com/oauth2/v3/userinfo
