@@ -1,7 +1,22 @@
 server:
   port: 8081
+
+spring:
+  jpa:
+    database-platform: com.org.googleouth2jwtresourseserver.configuration.SQLDialect
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:sqlite:spring-trainning-sqlite.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin 
+   
+
 oauth:
   clientId: 252882737828-4nijfj919fdsokaalhgcada9djg0ttth.apps.googleusercontent.com # get a client-id from https://console.developers.google.com/
   clientSecret: GoejX8RdVuDL4QijCmIfdKfx # get a client-secret from https://console.developers.google.com/
   checkTokenUrl: https://oauth2.googleapis.com/tokeninfo?id_token={accessToken}
   userInfoUrl: https://www.googleapis.com/oauth2/v3/userinfo
+  appTokenURI: /auth/apptoken
+  secretKey: "mySecretKey"

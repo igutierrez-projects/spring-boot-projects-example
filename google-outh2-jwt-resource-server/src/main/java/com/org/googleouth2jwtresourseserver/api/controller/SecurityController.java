@@ -7,6 +7,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SecurityController {
 	
+	@PostMapping("/oauth/app_token")
+	private String getAppToken() {
+		return "";
+	}
+	
 	
 	
 

@@ -8,16 +8,12 @@ import org.springframework.stereotype.Component;
 public class OAuthProperties {
 	
 	
-	private String clientId;
-	
-	
-	private String clientSecret;
-	
-	
-	private String checkTokenUrl;
-	
-	
-	private String userInfoUrl;
+	private String clientId;	
+	private String clientSecret;	
+	private String checkTokenUrl;	
+	private String userInfoUrl;	
+	private String appTokenURI;	
+	private String secretKey;
 
 	public String getClientId() {
 		return clientId;
@@ -51,6 +47,20 @@ public class OAuthProperties {
 		this.userInfoUrl = userInfoUrl;
 	}
 
-	
+	public String getAppTokenURI() {
+		return appTokenURI;
+	}
+
+	public void setAppTokenURI(String appTokenURI) {
+		this.appTokenURI = appTokenURI;
+	}
+
+	public String getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}	
 	
 }
