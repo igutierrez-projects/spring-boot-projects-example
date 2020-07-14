@@ -3,8 +3,10 @@ package com.org.googleouth2jwtresourseserver.filter;
 
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -29,15 +31,6 @@ import java.util.ArrayList;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 	
-	private final String JWT_HEADER = "Bearer ";
-	private final String AUTHORIZATION_HEADER = "Authorization";
-
-    //@Autowired
-    //private JwtUtil jwtUtil;
-    
-	@Autowired
-	private OAuthProperties oAuthProperties;
-	
 	@Autowired
 	private TokenService tokenService;
   
@@ -45,24 +38,35 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
     	
-    	final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        
-    	if( !request.getMethod().equals(HttpMethod.POST.name()) || authorizationHeader == null || (authorizationHeader != null && !authorizationHeader.startsWith("Bearer ")) ) {
-    		response.sendError(HttpStatus.SC_BAD_REQUEST);
-    		return;
-    	} 
+    	final String token = tokenService.getTokenFromRequest(request);
     	
-    	String token = authorizationHeader.substring(7);   
-    	UsernamePasswordAuthenticationToken user = tokenService.verifyToken(token);
-    	if( user != null) {
-    		user.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        	SecurityContextHolder.getContext().setAuthentication(user);   
-            //chain.doFilter(request, response);
-        	response.addHeader(AUTHORIZATION_HEADER, tokenService.generateAppToken(user.getPrincipal().toString()));
+    	if( this.isPostMethod(request) &&  token != null ) {    		
+    		try {    			
+    			Authentication user = this.loadAuthenticationContext(token, request);            	
+            	response.addHeader(HttpHeaders.AUTHORIZATION, tokenService.generateAppToken(user.getPrincipal().toString()));    			
+    		}catch (Exception e) {
+    			response.sendError(HttpStatus.SC_FORBIDDEN);
+			}
+    			
     	} else {
-    		response.sendError(HttpStatus.SC_FORBIDDEN);
+    		response.sendError(HttpStatus.SC_BAD_REQUEST);  
     	}
-    	
-     }
+    }  	
+    
+    private boolean isPostMethod(HttpServletRequest request) {
+    	return request.getMethod().equals(HttpMethod.POST.name());
+    }
+    
+    private Authentication loadAuthenticationContext(String token, HttpServletRequest request) throws Exception{
+    	UsernamePasswordAuthenticationToken user = tokenService.verifyTokenFromGoogle(token);
+		if( user != null) {
+    		user.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); //Optional
+        	SecurityContextHolder.getContext().setAuthentication(user);
+        	return user;
+		} else {
+			throw new Exception();
+		}
+    }
+		
 
 }
